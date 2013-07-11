@@ -5,6 +5,8 @@ DATABASES = {
     },
 }
 
+SECRET_KEY = 'notsecure'
+
 INSTALLED_APPS = (
     'encrypted_fields',
 )
