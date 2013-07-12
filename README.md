@@ -24,19 +24,14 @@ In your `settings.py`
 
 Then, in `models.py`
 
-    from encrypted_fields import (
-        EncryptedCharField,
-        EncryptedTextField,
-        EncryptedDateTimeField,
-        EncryptedIntegerField,
-    )
+    from encrypted_fields import EncryptedTextField
 
     class MyModel(models.Model):
-        char_field = EncryptedCharField(max_length=255)
         text_field = EncryptedTextField()
-        datetime_field = EncryptedDateTimeField()
-        integer_field = EncryptedIntegerField()
 
+Use your model as normal and your data will be encrypted in the database.
+
+_Warning:_ Once the data is encrypted, it can no longer to used to query or sort. In SQL, these will all look like text fields with random noise in them (which is what you want).
 
 #### Available Fields
 
