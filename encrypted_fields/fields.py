@@ -1,7 +1,11 @@
 
 from django.db import models
 from django.conf import settings
-from django.utils.encoding import smart_text
+
+try:
+    from django.utils.encoding import smart_text
+except ImportError:
+    from django.utils.encoding import smart_str as smart_text
 
 from keyczar import keyczar
 
