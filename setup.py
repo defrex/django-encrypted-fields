@@ -8,14 +8,16 @@ import os
 import sys
 
 
-name = 'Django Encrypted Fields'
-package = 'django-encrypted-fields'
+name = 'django-encrypted-fields'
+package = 'encrypted_fields'
 description = ''
 url = 'http://github.com/defrex/django-encrypted-fields/'
 author = 'Aron Jones'
 author_email = 'aron.jones@gmail.com'
 license = 'BSD'
-install_requires = []
+
+with open('requirements.txt', 'r') as requirements:
+    requires = [line.strip() for line in requirements.readlines()]
 
 
 def get_version(package):
@@ -43,5 +45,5 @@ setup(
     author=author,
     author_email=author_email,
     packages=['encrypted_fields'],
-    install_requires=install_requires
+    install_requires=requires,
 )
