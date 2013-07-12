@@ -59,3 +59,15 @@ class EncryptedDateTimeField(EncryptedFieldMixin, models.DateTimeField):
 
 class EncryptedIntegerField(EncryptedFieldMixin, models.IntegerField):
     pass
+
+
+class EncryptedFloatField(EncryptedFieldMixin, models.FloatField):
+    pass
+
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ['^encrypted_fields\.fields\.\w+Field'])
+
+except ImportError:
+    pass

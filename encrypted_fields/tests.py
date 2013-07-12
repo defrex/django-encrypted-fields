@@ -10,6 +10,7 @@ from .fields import (
     EncryptedTextField,
     EncryptedDateTimeField,
     EncryptedIntegerField,
+    EncryptedFloatField,
 )
 
 
@@ -18,6 +19,7 @@ class TestModel(models.Model):
     text = EncryptedTextField(null=True)
     datetime = EncryptedDateTimeField(null=True)
     integer = EncryptedIntegerField(null=True)
+    floating = EncryptedFloatField(null=True)
 
 
 class FieldTest(TestCase):
@@ -90,3 +92,18 @@ class FieldTest(TestCase):
 
         fresh_model = TestModel.objects.get(id=model.id)
         self.assertEqual(fresh_model.integer, plaintext)
+
+    def test_float_field_encrypted(self):
+        plaintext = 42.44
+
+        model = TestModel()
+        model.floating = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('floating', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertNotEqual(plaintext, str(ciphertext))
+
+        fresh_model = TestModel.objects.get(id=model.id)
+        self.assertEqual(fresh_model.floating, plaintext)

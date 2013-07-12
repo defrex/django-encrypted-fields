@@ -40,7 +40,13 @@ Then, in `models.py`
 
 #### Available Fields
 
-Currently, there are only 4 fields available. `EncryptedCharField`, `EncryptedTextField`, `EncryptedDateTimeField`, `EncryptedIntegerField`. They have the save APIs as their non-encrypted counterparts.
+Currently build in and unit-tested fields. They have the save APIs as their non-encrypted counterparts.
+
+- `EncryptedCharField`
+- `EncryptedTextField`
+- `EncryptedDateTimeField`
+- `EncryptedIntegerField`
+- `EncryptedFloatField`
 
 #### Encrypt All The Fields!
 
