@@ -25,9 +25,9 @@ class FieldTest(TestCase):
     def get_db_value(self, field, model_id):
         cursor = connection.cursor()
         cursor.execute(
-            'select {} '
+            'select {0} '
             'from encrypted_fields_testmodel '
-            'where id = {};'.format(field, model_id)
+            'where id = {1};'.format(field, model_id)
         )
         return cursor.fetchone()[0]
 
