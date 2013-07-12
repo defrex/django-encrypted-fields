@@ -1,7 +1,6 @@
 
 from django.db import models
 from django.conf import settings
-from django.utils.six import with_metaclass, string_types
 from django.utils.encoding import smart_text
 
 from keyczar import keyczar
@@ -13,13 +12,14 @@ crypter = keyczar.Crypter.Read(settings.ENCRYPTED_FIELDS_KEYDIR)
 class EncryptedFieldException(Exception): pass
 
 
-class EncryptedFieldMixin(with_metaclass(models.SubfieldBase, object)):
+class EncryptedFieldMixin(object):
+    __metaclass__ = models.SubfieldBase
 
     def get_internal_type(self):
         return 'TextField'
 
     def to_python(self, value):
-        if value is None or not isinstance(value, string_types):
+        if value is None or not isinstance(value, basestring):
             return value
 
         try:
