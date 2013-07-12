@@ -20,6 +20,10 @@ with open('encrypted_fields/__init__.py', 'r') as init_file:
 
 setup(
     name='django-encrypted-fields',
+    description=(
+        'This is a collection of Django Model Field classes '
+        'that are encrypted using Keyczar.'
+    ),
     url='http://github.com/defrex/django-encrypted-fields/',
     license='BSD',
     author='Aron Jones',
