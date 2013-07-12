@@ -10,6 +10,8 @@ This is a collection of Django Model Field classes that are encrypted using [Key
 
 #### Getting Started
 
+    $ pip install django-encrypted-fields
+
 Create a basic keyczar keyset. `AES-256` in this case.
 
     $ mkdir fieldkeys
