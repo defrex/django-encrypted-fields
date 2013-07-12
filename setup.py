@@ -6,10 +6,6 @@ from setuptools import setup
 import re
 
 
-with open('requirements.txt', 'r') as requirements:
-    requirements = [line.strip() for line in requirements.readlines()]
-
-
 with open('encrypted_fields/__init__.py', 'r') as init_file:
     version = re.search(
         '^__version__ = [\'"]([^\'"]+)[\'"]',
@@ -30,5 +26,8 @@ setup(
     author_email='aron.jones@gmail.com',
     packages=['encrypted_fields'],
     version=version,
-    install_requires=requirements,
+    install_requires=[
+        'Django>=1.4',
+        'python-keyczar>=0.71c',
+    ],
 )
