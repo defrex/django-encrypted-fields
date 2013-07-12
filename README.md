@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/defrex/django-encrypted-fields.png)](https://travis-ci.org/defrex/django-encrypted-fields)
+
 ### Django Encrypted Fields
 
 This is a collection of Django Model Field classes that are encrypted using [Keyczar](http://www.keyczar.org/).
