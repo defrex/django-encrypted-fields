@@ -1,9 +1,9 @@
 
 import re
-from datetime import datetime
 
 from django.db import models, connection
 from django.test import TestCase
+from django.utils import timezone
 
 from .fields import (
     EncryptedCharField,
@@ -66,7 +66,7 @@ class FieldTest(TestCase):
         self.assertEqual(fresh_model.text, plaintext)
 
     def test_datetime_field_encrypted(self):
-        plaintext = datetime.now()
+        plaintext = timezone.now()
 
         model = TestModel()
         model.datetime = plaintext
