@@ -11,6 +11,7 @@ from .fields import (
     EncryptedDateTimeField,
     EncryptedIntegerField,
     EncryptedFloatField,
+    EncryptedEmailField,
 )
 
 
@@ -20,6 +21,7 @@ class TestModel(models.Model):
     datetime = EncryptedDateTimeField(null=True)
     integer = EncryptedIntegerField(null=True)
     floating = EncryptedFloatField(null=True)
+    email = EncryptedEmailField(null=True)
 
 
 class FieldTest(TestCase):
@@ -107,3 +109,18 @@ class FieldTest(TestCase):
 
         fresh_model = TestModel.objects.get(id=model.id)
         self.assertEqual(fresh_model.floating, plaintext)
+
+    def test_email_field_encrypted(self):
+        plaintext = 'aron.jones@gmail.com' # my email address, btw
+
+        model = TestModel()
+        model.email = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('email', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertTrue('aron' not in ciphertext)
+
+        fresh_model = TestModel.objects.get(id=model.id)
+        self.assertEqual(fresh_model.email, plaintext)

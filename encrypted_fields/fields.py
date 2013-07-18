@@ -65,6 +65,10 @@ class EncryptedFloatField(EncryptedFieldMixin, models.FloatField):
     pass
 
 
+class EncryptedEmailField(EncryptedFieldMixin, models.EmailField):
+    pass
+
+
 try:
     from south.modelsinspector import add_introspection_rules
     add_introspection_rules([], ['^encrypted_fields\.fields\.\w+Field'])

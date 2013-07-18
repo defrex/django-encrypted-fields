@@ -42,6 +42,7 @@ Currently build in and unit-tested fields. They have the save APIs as their non-
 - `EncryptedDateTimeField`
 - `EncryptedIntegerField`
 - `EncryptedFloatField`
+- `EncryptedEmailField`
 
 #### Encrypt All The Fields!
 
@@ -53,6 +54,4 @@ Making new fields is easy! Django Encrypted Fields uses a handy mixin to make up
     class EncryptedIPAddressField(EncryptedFieldMixin, models.IPAddressField):
         pass
 
-Please report an issues you encounter when trying this, since I've only tested it with the 4 fields above.
-
-
+Please report an issues you encounter when trying this, since I've only tested it with the fields above.
