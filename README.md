@@ -43,6 +43,7 @@ Currently build in and unit-tested fields. They have the save APIs as their non-
 - `EncryptedIntegerField`
 - `EncryptedFloatField`
 - `EncryptedEmailField`
+- `EncryptedBooleanField`
 
 #### Encrypt All The Fields!
 
