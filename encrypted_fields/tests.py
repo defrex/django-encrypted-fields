@@ -12,6 +12,7 @@ from .fields import (
     EncryptedIntegerField,
     EncryptedFloatField,
     EncryptedEmailField,
+    EncryptedBooleanField,
 )
 
 
@@ -22,6 +23,7 @@ class TestModel(models.Model):
     integer = EncryptedIntegerField(null=True)
     floating = EncryptedFloatField(null=True)
     email = EncryptedEmailField(null=True)
+    boolean = EncryptedBooleanField(default=False)
 
 
 class FieldTest(TestCase):
@@ -124,3 +126,23 @@ class FieldTest(TestCase):
 
         fresh_model = TestModel.objects.get(id=model.id)
         self.assertEqual(fresh_model.email, plaintext)
+
+    def test_boolean_field_encrypted(self):
+        plaintext = True
+
+        model = TestModel()
+        model.boolean = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('boolean', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertNotEqual(True, ciphertext)
+        self.assertNotEqual('True', ciphertext)
+        self.assertNotEqual('true', ciphertext)
+        self.assertNotEqual('1', ciphertext)
+        self.assertNotEqual(1, ciphertext)
+        self.assertTrue(not isinstance(ciphertext, bool))
+
+        fresh_model = TestModel.objects.get(id=model.id)
+        self.assertEqual(fresh_model.boolean, plaintext)
