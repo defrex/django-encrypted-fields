@@ -15,15 +15,35 @@ from .fields import (
     EncryptedBooleanField,
 )
 
+from keyczar import keyczar, readers
+
+# Test class that encapsulates some Keyczar functions.
+# Requirements are to implement __init__, decrypt(), encrypt()
+class TestCrypter(object):
+    def __init__(self, keyname, *args, **kwargs):
+        self.keydata = readers.FileReader(keyname)
+        self.crypter = keyczar.Crypter(self.keydata)
+
+    def encrypt(self, cleartext):
+        return self.crypter.Encrypt(cleartext)
+
+    def decrypt(self, ciphertext):
+        return self.crypter.Decrypt(ciphertext)
 
 class TestModel(models.Model):
     char = EncryptedCharField(max_length=255, null=True)
+    prefix_char = EncryptedCharField(max_length=255, prefix='ENCRYPTED:::')
+    decrypt_only = EncryptedCharField(max_length=255, decrypt_only=True)
+    short_char = EncryptedCharField(max_length=50, null=True, enforce_max_length=True)
+
     text = EncryptedTextField(null=True)
     datetime = EncryptedDateTimeField(null=True)
     integer = EncryptedIntegerField(null=True)
     floating = EncryptedFloatField(null=True)
     email = EncryptedEmailField(null=True)
     boolean = EncryptedBooleanField(default=False)
+
+    char_custom_crypter = EncryptedCharField(max_length=255, null=True, crypter_klass=TestCrypter)
 
 
 class FieldTest(TestCase):
@@ -36,6 +56,57 @@ class FieldTest(TestCase):
             'where id = {1};'.format(field, model_id)
         )
         return cursor.fetchone()[0]
+
+    def test_char_field_encrypted_custom(self):
+        plaintext = 'Oh hi, test reader!'
+
+        model = TestModel()
+        model.char_custom_crypter = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('char_custom_crypter', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertTrue('test' not in ciphertext)
+
+        fresh_model = TestModel.objects.get(id=model.id)
+        self.assertEqual(fresh_model.char_custom_crypter, plaintext)
+
+
+    def test_prefix_char_field_encrypted(self):
+        plaintext = 'Oh hi, test reader!'
+
+        model = TestModel()
+        model.prefix_char = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('prefix_char', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertTrue('test' not in ciphertext)
+        self.assertTrue(ciphertext.startswith('ENCRYPTED:::'))
+
+    def test_decrypt_only_field(self):
+        known_plaintext = 'Oh hi, test reader!'
+        known_ciphertext = (
+            'ADQA_82aYN2v_PzXcNPZprS-Ak_xbPmHj8TRuj8sU74ydIJeWtgpKK'
+            'Irmvw9ZnZCRpXRfZ6blOaBWhjsw62nNu7vQXWJXMCdmw'
+            )
+        model = TestModel()
+        model.decrypt_only = known_ciphertext
+        model.save()
+
+        plaintext = self.get_db_value('decrypt_only', model.id)
+        self.assertEquals(plaintext, known_plaintext)
+
+    def test_decrypt_only_plaintext(self):
+        known_plaintext = 'I am so plain and ordinary'
+        model = TestModel()
+        model.decrypt_only = known_plaintext
+        model.save()
+
+        plaintext = self.get_db_value('decrypt_only', model.id)
+        self.assertEquals(plaintext, known_plaintext)
 
     def test_char_field_encrypted(self):
         plaintext = 'Oh hi, test reader!'
@@ -51,6 +122,15 @@ class FieldTest(TestCase):
 
         fresh_model = TestModel.objects.get(id=model.id)
         self.assertEqual(fresh_model.char, plaintext)
+
+    def test_short_char_field_encrypted(self):
+        """ Test the max_length validation of an encrypted char field """
+        plaintext = 'Oh hi, test reader!'
+
+        model = TestModel()
+        model.short_char = plaintext
+        self.assertRaises(ValueError, model.save)
+
 
     def test_text_field_encrypted(self):
         plaintext = 'Oh hi, test reader!' * 10
