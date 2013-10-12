@@ -1,7 +1,10 @@
+
 import os
+import types
 
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 try:
     from django.utils.encoding import smart_text
@@ -143,7 +146,7 @@ class EncryptedFieldMixin(object):
         return 'TextField'
 
     def to_python(self, value):
-        if value is None or not isinstance(value, basestring):
+        if value is None or not isinstance(value, types.StringTypes):
             return value
 
         if self.prefix and value.startswith(self.prefix):
@@ -168,13 +171,19 @@ class EncryptedFieldMixin(object):
             value = self.get_prep_value(value)
 
             if self.enforce_max_length:
-                if ( value and
-                     hasattr(self, 'max_length') and self.max_length and
-                     len(value) > self.max_length
-                     ):
+                if (
+                    value
+                    and hasattr(self, 'max_length')
+                    and self.max_length
+                    and len(value) > self.max_length
+                ):
                     raise ValueError(
-                        'Field %s max_length=%s encrypted_len=%s' %
-                        (self.name, self.max_length, len(value),))
+                        'Field {} max_length={} encrypted_len={}'.format(
+                            self.name,
+                            self.max_length,
+                            len(value),
+                        )
+                    )
         return value
 
 
