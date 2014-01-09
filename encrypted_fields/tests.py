@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import re
 
@@ -109,6 +110,21 @@ class FieldTest(TestCase):
 
     def test_char_field_encrypted(self):
         plaintext = 'Oh hi, test reader!'
+
+        model = TestModel()
+        model.char = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('char', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertTrue('test' not in ciphertext)
+
+        fresh_model = TestModel.objects.get(id=model.id)
+        self.assertEqual(fresh_model.char, plaintext)
+
+    def test_unicode_encrypted(self):
+        plaintext = 'Oh hi, test reader! 🐱'
 
         model = TestModel()
         model.char = plaintext
