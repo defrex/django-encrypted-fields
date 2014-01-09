@@ -124,7 +124,7 @@ class FieldTest(TestCase):
         self.assertEqual(fresh_model.char, plaintext)
 
     def test_unicode_encrypted(self):
-        plaintext = 'Oh hi, test reader! 🐱'
+        plaintext = u'Oh hi, test reader! 🐱'
 
         model = TestModel()
         model.char = plaintext

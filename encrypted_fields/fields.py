@@ -154,7 +154,10 @@ class EncryptedFieldMixin(object):
 
         try:
             value = self.crypter().decrypt(value)
+            value = value.decode('unicode_escape')
         except keyczar.errors.KeyczarError:
+            pass
+        except UnicodeEncodeError:
             pass
 
         return super(EncryptedFieldMixin, self).to_python(value)
@@ -164,7 +167,14 @@ class EncryptedFieldMixin(object):
 
         if value is None or value == '' or self.decrypt_only:
             return value
-        return self.prefix + self.crypter().encrypt(smart_text(value))
+
+        if isinstance(value, types.StringTypes):
+            value = value.encode('unicode_escape')
+            value = value.encode('ascii')
+        else:
+            value = str(value)
+
+        return self.prefix + self.crypter().encrypt(value)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         if not prepared:
