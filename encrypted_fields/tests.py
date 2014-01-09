@@ -72,7 +72,6 @@ class FieldTest(TestCase):
         fresh_model = TestModel.objects.get(id=model.id)
         self.assertEqual(fresh_model.char_custom_crypter, plaintext)
 
-
     def test_prefix_char_field_encrypted(self):
         plaintext = 'Oh hi, test reader!'
 
@@ -91,7 +90,7 @@ class FieldTest(TestCase):
         known_ciphertext = (
             'ADQA_82aYN2v_PzXcNPZprS-Ak_xbPmHj8TRuj8sU74ydIJeWtgpKK'
             'Irmvw9ZnZCRpXRfZ6blOaBWhjsw62nNu7vQXWJXMCdmw'
-            )
+        )
         model = TestModel()
         model.decrypt_only = known_ciphertext
         model.save()
@@ -130,7 +129,6 @@ class FieldTest(TestCase):
         model = TestModel()
         model.short_char = plaintext
         self.assertRaises(ValueError, model.save)
-
 
     def test_text_field_encrypted(self):
         plaintext = 'Oh hi, test reader!' * 10
