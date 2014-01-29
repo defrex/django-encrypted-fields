@@ -56,3 +56,5 @@ Making new fields is easy! Django Encrypted Fields uses a handy mixin to make up
         pass
 
 Please report an issues you encounter when trying this, since I've only tested it with the fields above.
+
+Tips welcome. :) [13q4ZK9BgR4ZhKq27KmkuaEkay1GBEoUuS](https://coinbase.com/checkouts/5235423fe479cfc415f33635f75212fe)
