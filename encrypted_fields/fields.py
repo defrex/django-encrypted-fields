@@ -188,7 +188,7 @@ class EncryptedFieldMixin(object):
                     and len(value) > self.max_length
                 ):
                     raise ValueError(
-                        'Field {} max_length={} encrypted_len={}'.format(
+                        'Field {0} max_length={1} encrypted_len={2}'.format(
                             self.name,
                             self.max_length,
                             len(value),
