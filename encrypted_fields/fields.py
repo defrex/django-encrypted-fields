@@ -213,6 +213,10 @@ class EncryptedIntegerField(EncryptedFieldMixin, models.IntegerField):
     pass
 
 
+class EncryptedDateField(EncryptedFieldMixin, models.DateField):
+    pass
+
+
 class EncryptedFloatField(EncryptedFieldMixin, models.FloatField):
     pass
 
