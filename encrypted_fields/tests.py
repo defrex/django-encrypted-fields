@@ -194,19 +194,17 @@ class FieldTest(TestCase):
         self.assertEqual(fresh_model.integer, plaintext)
 
     def test_date_field_encrypted(self):
-        plaintext = timezone.now().date()
+        plaindate = timezone.now().date()
 
         model = TestModel()
-        model.date = plaintext
+        model.date = plaindate
         model.save()
 
         ciphertext = self.get_db_value('date', model.id)
-
-        self.assertNotEqual(plaintext, ciphertext)
-        self.assertNotEqual(plaintext, str(ciphertext))
-
         fresh_model = TestModel.objects.get(id=model.id)
-        self.assertEqual(fresh_model.date, plaintext)
+
+        self.assertNotEqual(ciphertext, plaindate.isoformat())
+        self.assertEqual(fresh_model.date, plaindate)
 
     def test_float_field_encrypted(self):
         plaintext = 42.44
