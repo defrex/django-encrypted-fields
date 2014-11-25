@@ -6,3 +6,5 @@ build/
 *~
 .venv
 .env
+
+*.sublime-*
