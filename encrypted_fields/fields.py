@@ -5,6 +5,7 @@ import types
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.functional import cached_property
 
 try:
     from django.utils.encoding import smart_text
@@ -14,7 +15,9 @@ except ImportError:
 from keyczar import keyczar
 
 
-class EncryptedFieldException(Exception): pass
+class EncryptedFieldException(Exception):
+    pass
+
 
 # Simple wrapper around keyczar to standardize the initialization
 # of the crypter object and allow for others to extend as needed.
@@ -27,6 +30,7 @@ class KeyczarWrapper(object):
 
     def decrypt(self, ciphertext):
         return self.crypter.Decrypt(ciphertext)
+
 
 class EncryptedFieldMixin(object):
     """
@@ -210,7 +214,15 @@ class EncryptedDateTimeField(EncryptedFieldMixin, models.DateTimeField):
 
 
 class EncryptedIntegerField(EncryptedFieldMixin, models.IntegerField):
-    pass
+    @cached_property
+    def validators(self):
+        """
+        See issue https://github.com/defrex/django-encrypted-fields/issues/7
+        Need to keep all field validators, but need to change `get_internal_type` on the fly
+        to prevent fail in django 1.7.
+        """
+        self.get_internal_type = lambda: 'IntegerField'
+        return models.IntegerField.validators.__get__(self)
 
 
 class EncryptedDateField(EncryptedFieldMixin, models.DateField):
@@ -223,6 +235,7 @@ class EncryptedFloatField(EncryptedFieldMixin, models.FloatField):
 
 class EncryptedEmailField(EncryptedFieldMixin, models.EmailField):
     pass
+
 
 class EncryptedBooleanField(EncryptedFieldMixin, models.BooleanField):
     pass
