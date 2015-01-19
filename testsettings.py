@@ -2,9 +2,14 @@
 import os
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': ':memory:',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_encrypted_fields',
+        'USER': 'defrex',
     },
 }
 
