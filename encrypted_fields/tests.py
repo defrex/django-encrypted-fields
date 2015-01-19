@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import re
+import unittest
 
+import django
+from django.conf import settings
 from django.db import models, connection
 from django.test import TestCase
 from django.utils import timezone
@@ -19,6 +22,7 @@ from .fields import (
 
 from keyczar import keyczar, readers
 
+
 # Test class that encapsulates some Keyczar functions.
 # Requirements are to implement __init__, decrypt(), encrypt()
 class TestCrypter(object):
@@ -32,24 +36,28 @@ class TestCrypter(object):
     def decrypt(self, ciphertext):
         return self.crypter.Decrypt(ciphertext)
 
+
 class TestModel(models.Model):
-    char = EncryptedCharField(max_length=255, null=True)
-    prefix_char = EncryptedCharField(max_length=255, prefix='ENCRYPTED:::')
-    decrypt_only = EncryptedCharField(max_length=255, decrypt_only=True)
-    short_char = EncryptedCharField(max_length=50, null=True, enforce_max_length=True)
+    char = EncryptedCharField(max_length=255, null=True, blank=True)
+    prefix_char = EncryptedCharField(max_length=255, prefix='ENCRYPTED:::', blank=True)
+    decrypt_only = EncryptedCharField(max_length=255, decrypt_only=True, blank=True)
+    short_char = EncryptedCharField(
+        max_length=50, null=True, enforce_max_length=True, blank=True)
 
-    text = EncryptedTextField(null=True)
-    datetime = EncryptedDateTimeField(null=True)
-    integer = EncryptedIntegerField(null=True)
-    date = EncryptedDateField(null=True)
-    floating = EncryptedFloatField(null=True)
-    email = EncryptedEmailField(null=True)
-    boolean = EncryptedBooleanField(default=False)
+    text = EncryptedTextField(null=True, blank=True)
+    datetime = EncryptedDateTimeField(null=True, blank=True)
+    integer = EncryptedIntegerField(null=True, blank=True)
+    date = EncryptedDateField(null=True, blank=True)
+    floating = EncryptedFloatField(null=True, blank=True)
+    email = EncryptedEmailField(null=True, blank=True)
+    boolean = EncryptedBooleanField(default=False, blank=True)
 
-    char_custom_crypter = EncryptedCharField(max_length=255, null=True, crypter_klass=TestCrypter)
+    char_custom_crypter = EncryptedCharField(
+        max_length=255, null=True,crypter_klass=TestCrypter, blank=True)
 
 
 class FieldTest(TestCase):
+    IS_POSTGRES = settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2'
 
     def get_db_value(self, field, model_id):
         cursor = connection.cursor()
@@ -222,7 +230,7 @@ class FieldTest(TestCase):
         self.assertEqual(fresh_model.floating, plaintext)
 
     def test_email_field_encrypted(self):
-        plaintext = 'aron.jones@gmail.com' # my email address, btw
+        plaintext = 'aron.jones@gmail.com'  # my email address, btw
 
         model = TestModel()
         model.email = plaintext
@@ -255,3 +263,23 @@ class FieldTest(TestCase):
 
         fresh_model = TestModel.objects.get(id=model.id)
         self.assertEqual(fresh_model.boolean, plaintext)
+
+    @unittest.skipIf(django.VERSION < (1, 7), "Issue exists in django 1.7+")
+    @unittest.skipIf(not IS_POSTGRES, "Issue exists for postgresql")
+    def test_integerfield_validation_in_django_1_7_passes_successfully(self):
+        plainint = 1111
+
+        obj = TestModel()
+        obj.integer = plainint
+
+        # see https://github.com/defrex/django-encrypted-fields/issues/7
+        obj.full_clean()
+        obj.save()
+
+        ciphertext = self.get_db_value('integer', obj.id)
+
+        self.assertNotEqual(plainint, ciphertext)
+        self.assertNotEqual(plainint, str(ciphertext))
+
+        fresh_model = TestModel.objects.get(id=obj.id)
+        self.assertEqual(fresh_model.integer, plainint)
