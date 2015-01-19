@@ -233,6 +233,10 @@ class EncryptedFloatField(EncryptedFieldMixin, models.FloatField):
     pass
 
 
+class EncryptedDecimalField(EncryptedFieldMixin, models.DecimalField):
+    pass
+
+
 class EncryptedEmailField(EncryptedFieldMixin, models.EmailField):
     pass
 

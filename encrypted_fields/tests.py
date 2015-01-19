@@ -2,6 +2,7 @@
 
 import re
 import unittest
+from decimal import Decimal
 
 import django
 from django.conf import settings
@@ -16,6 +17,7 @@ from .fields import (
     EncryptedIntegerField,
     EncryptedDateField,
     EncryptedFloatField,
+    EncryptedDecimalField,
     EncryptedEmailField,
     EncryptedBooleanField,
 )
@@ -49,6 +51,7 @@ class TestModel(models.Model):
     integer = EncryptedIntegerField(null=True, blank=True)
     date = EncryptedDateField(null=True, blank=True)
     floating = EncryptedFloatField(null=True, blank=True)
+    decimal = EncryptedDecimalField(max_digits=5, decimal_places=2, default=0, blank=True)
     email = EncryptedEmailField(null=True, blank=True)
     boolean = EncryptedBooleanField(default=False, blank=True)
 
@@ -283,3 +286,18 @@ class FieldTest(TestCase):
 
         fresh_model = TestModel.objects.get(id=obj.id)
         self.assertEqual(fresh_model.integer, plainint)
+
+    def test_decimal_field_encrypted(self):
+        plaintext = Decimal('414.45')
+
+        model = TestModel()
+        model.decimal = plaintext
+        model.save()
+
+        ciphertext = self.get_db_value('decimal', model.id)
+
+        self.assertNotEqual(plaintext, ciphertext)
+        self.assertNotEqual(str(plaintext), str(ciphertext))
+
+        fresh_model = TestModel.objects.get(id=model.id)
+        self.assertEqual(fresh_model.decimal, plaintext)
