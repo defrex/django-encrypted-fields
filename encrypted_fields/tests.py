@@ -39,8 +39,16 @@ class TestCrypter(object):
 
 class TestModel(models.Model):
     char = EncryptedCharField(max_length=255, null=True, blank=True)
-    prefix_char = EncryptedCharField(max_length=255, prefix='ENCRYPTED:::', blank=True)
-    decrypt_only = EncryptedCharField(max_length=255, decrypt_only=True, blank=True)
+    prefix_char = EncryptedCharField(
+        max_length=255,
+        prefix='ENCRYPTED:::',
+        blank=True
+    )
+    decrypt_only = EncryptedCharField(
+        max_length=255,
+        decrypt_only=True,
+        blank=True
+    )
     short_char = EncryptedCharField(
         max_length=50, null=True, enforce_max_length=True, blank=True)
 
@@ -53,11 +61,16 @@ class TestModel(models.Model):
     boolean = EncryptedBooleanField(default=False, blank=True)
 
     char_custom_crypter = EncryptedCharField(
-        max_length=255, null=True,crypter_klass=TestCrypter, blank=True)
+        max_length=255,
+        null=True,
+        crypter_klass=TestCrypter,
+        blank=True
+    )
 
 
 class FieldTest(TestCase):
-    IS_POSTGRES = settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql_psycopg2'
+    IS_POSTGRES = settings.DATABASES['default']['ENGINE'] == \
+        'django.db.backends.postgresql_psycopg2'
 
     def get_db_value(self, field, model_id):
         cursor = connection.cursor()
