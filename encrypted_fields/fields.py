@@ -2,6 +2,7 @@
 import os
 import types
 
+import django
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -77,6 +78,9 @@ class EncryptedFieldMixin(object):
     A ValueError will be raised if the encrypted length of the data (including
     prefix if specified) is greater than the max_length of the field.
     """
+
+    if django.VERSION < (1, 8):
+        __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         """
