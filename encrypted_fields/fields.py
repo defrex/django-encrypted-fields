@@ -2,6 +2,7 @@
 import os
 import types
 
+import django
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -45,8 +46,8 @@ class EncryptedFieldMixin(object):
     data in your database. This lives in a Keyczar key directory specified by:
     the setting - settings.ENCRYPTED_FIELDS_KEYDIR -
 
-    Optionally, you can name specific encryption keys for data-specific purposes
-    in your model such as:
+    Optionally, you can name specific encryption keys for data-specific
+    purposes in your model such as:
         special_data = EncrytpedCharField( ..., keyname='special_data' )
 
     The Mixin will handle the encryption/decryption seamlessly, but native
@@ -77,7 +78,9 @@ class EncryptedFieldMixin(object):
     A ValueError will be raised if the encrypted length of the data (including
     prefix if specified) is greater than the max_length of the field.
     """
-    __metaclass__ = models.SubfieldBase
+
+    if django.VERSION < (1, 8):
+        __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         """
@@ -137,7 +140,11 @@ class EncryptedFieldMixin(object):
 
         # Ensure the encrypted data does not exceed the max_length
         # of the database. Data truncation is a possibility otherwise.
-        self.enforce_max_length = getattr(settings, 'ENFORCE_MAX_LENGTH', False)
+        self.enforce_max_length = getattr(
+            settings,
+            'ENFORCE_MAX_LENGTH',
+            False
+        )
         if not self.enforce_max_length:
             self.enforce_max_length = kwargs.pop('enforce_max_length', False)
 
@@ -148,6 +155,9 @@ class EncryptedFieldMixin(object):
 
     def get_internal_type(self):
         return 'TextField'
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
     def to_python(self, value):
         if value is None or not isinstance(value, types.StringTypes):
@@ -186,10 +196,9 @@ class EncryptedFieldMixin(object):
 
             if self.enforce_max_length:
                 if (
-                    value
-                    and hasattr(self, 'max_length')
-                    and self.max_length
-                    and len(value) > self.max_length
+                    value and hasattr(self, 'max_length') and
+                    self.max_length and
+                    len(value) > self.max_length
                 ):
                     raise ValueError(
                         'Field {0} max_length={1} encrypted_len={2}'.format(
@@ -218,8 +227,8 @@ class EncryptedIntegerField(EncryptedFieldMixin, models.IntegerField):
     def validators(self):
         """
         See issue https://github.com/defrex/django-encrypted-fields/issues/7
-        Need to keep all field validators, but need to change `get_internal_type` on the fly
-        to prevent fail in django 1.7.
+        Need to keep all field validators, but need to change
+        `get_internal_type` on the fly to prevent fail in django 1.7.
         """
         self.get_internal_type = lambda: 'IntegerField'
         return models.IntegerField.validators.__get__(self)
