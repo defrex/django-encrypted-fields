@@ -136,7 +136,7 @@ class EncryptedFieldMixin(object):
         # to be encrypted.
         self.decrypt_only = kwargs.pop('decrypt_only', False)
 
-        self._crypter = self._crypter_klass(self.keydir)
+        self.load_crypter()
 
         # Ensure the encrypted data does not exceed the max_length
         # of the database. Data truncation is a possibility otherwise.
@@ -155,6 +155,9 @@ class EncryptedFieldMixin(object):
 
     def get_internal_type(self):
         return 'TextField'
+
+    def load_crypter(self):
+        self._crypter = self._crypter_klass(self.keydir)
 
     def from_db_value(self, value, expression, connection, context):
         return self.to_python(value)
