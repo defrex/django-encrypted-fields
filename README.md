@@ -37,7 +37,7 @@ _Warning:_ Once the data is encrypted, it can no longer to used to query or sort
 
 #### Available Fields
 
-Currently build in and unit-tested fields. They have the save APIs as their non-encrypted counterparts.
+Currently build in and unit-tested fields. They have the same APIs as their non-encrypted counterparts.
 
 - `EncryptedCharField`
 - `EncryptedTextField`
