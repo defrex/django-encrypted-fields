@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/defrex/django-encrypted-fields.png)](https://travis-ci.org/defrex/django-encrypted-fields)
 [![Pypi Package](https://badge.fury.io/py/django-encrypted-fields.png)](http://badge.fury.io/py/django-encrypted-fields)
-[![Downloads](https://pypip.in/d/django-encrypted-fields/badge.png)](https://crate.io/packages/django-encrypted-fields/)
 
 ### Django Encrypted Fields
 
