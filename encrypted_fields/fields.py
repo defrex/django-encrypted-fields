@@ -176,6 +176,8 @@ class EncryptedFieldMixin(object):
             pass
         except UnicodeEncodeError:
             pass
+        except binascii.Error:
+            pass        
 
         return super(EncryptedFieldMixin, self).to_python(value)
 
