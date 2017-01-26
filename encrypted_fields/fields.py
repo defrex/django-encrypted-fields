@@ -1,12 +1,14 @@
 
 import os
 import types
+import binascii
 
 import django
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import cached_property
+from django.utils import six
 
 try:
     from django.utils.encoding import smart_text
@@ -163,7 +165,7 @@ class EncryptedFieldMixin(object):
         return self.to_python(value)
 
     def to_python(self, value):
-        if value is None or not isinstance(value, types.StringTypes):
+        if value is None or not isinstance(value, six.string_types):
             return value
 
         if self.prefix and value.startswith(self.prefix):
@@ -177,7 +179,7 @@ class EncryptedFieldMixin(object):
         except UnicodeEncodeError:
             pass
         except binascii.Error:
-            pass        
+            pass
 
         return super(EncryptedFieldMixin, self).to_python(value)
 
@@ -187,7 +189,7 @@ class EncryptedFieldMixin(object):
         if value is None or value == '' or self.decrypt_only:
             return value
 
-        if isinstance(value, types.StringTypes):
+        if isinstance(value, six.string_types):
             value = value.encode('unicode_escape')
             value = value.encode('ascii')
         else:
